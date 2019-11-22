@@ -53,7 +53,7 @@ def get_page_count(page):
     print("\n")
     return page_count
 
-def main():
+def generate():
     page_count = 10
     page_num = 1
     game_list = []
@@ -84,4 +84,4 @@ def main():
     utils.generate_html("ps4", game_list)
 
 if __name__ == '__main__':
-    main()
+    generate()

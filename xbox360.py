@@ -53,7 +53,7 @@ def get_game_details(game_url, tries=1):
     return game_title, price
 
 
-def main():
+def generate():
     page_count = get_page_count()
     page_no = 1
     game_list = []
@@ -83,4 +83,4 @@ def main():
     utils.generate_html('xbox', game_list)
 
 if __name__ == '__main__':
-    main()
+    generate()

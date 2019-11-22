@@ -3,3 +3,4 @@
 .vscode
 .env
 *.tar*
+py3
