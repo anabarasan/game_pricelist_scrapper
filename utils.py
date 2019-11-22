@@ -95,7 +95,7 @@ def generate_html(system, row_list):
             price_elems.forEach(function(element) {
                 game_price = parseFloat(element.innerHTML);
                 // console.log(game_price > min, game_price < max);
-                if (game_price > min && game_price < max+1) {
+                if (game_price >= min && game_price < max+1) {
                     // console.log(element.innerHTML);
                     element.parentElement.style.display = "";
                 } else {
