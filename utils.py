@@ -2,15 +2,35 @@
 
 import csv
 from datetime import datetime
+import os
+
+def create_output_path():
+    date_parts = datetime.today().strftime('%Y-%m-%d').split('-')
+    date = date_parts[2]
+    month = date_parts[1]
+    year = date_parts[0]
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), year, month, date)
+
+    if os.path.exists(path):
+        if os.path.isdir(path):
+            return path
+        else:
+            print(f'problem with output directory {path}')
+            return
+    else:
+        os.makedirs(path)
+        return path
 
 def generate_csv(system, row_list, field_names):
-    outfile = f"{system}-{datetime.today().strftime('%Y-%m-%d')}.csv"
-    with open(outfile, 'w') as csvfile:
-        # fieldnames = ['title', 'price', 'url']
-        writer = csv.DictWriter(csvfile, fieldnames=field_names, extrasaction='ignore')
-        writer.writeheader()
-        for row in row_list:
-            writer.writerow(row)
+    output_path = create_output_path()
+    if output_path:
+        outfile = os.path.join(output_path, f"{system}.csv")
+        with open(outfile, 'w') as csvfile:
+            # fieldnames = ['title', 'price', 'url']
+            writer = csv.DictWriter(csvfile, fieldnames=field_names, extrasaction='ignore')
+            writer.writeheader()
+            for row in row_list:
+                writer.writerow(row)
 
 def generate_html(system, row_list):
     html_header = """
@@ -111,16 +131,18 @@ def generate_html(system, row_list):
     </script>
 </html>
 """
-    outfile = f"{system}-{datetime.today().strftime('%Y-%m-%d')}.html"
-    with open(outfile, 'w') as htmlfile:
-        htmlfile.write(html_header)
-        for row in row_list:
-            htmlfile.write(
-                f"""
+    output_path = create_output_path()
+    if output_path:
+        outfile = os.path.join(output_path, f"{system}.html")
+        with open(outfile, 'w') as htmlfile:
+            htmlfile.write(html_header)
+            for row in row_list:
+                htmlfile.write(
+                   f"""
             <tr>
                 <td>
                     <a href="{row["url"]}" target="_blank">{row["title"]}</a>
                 </td>
                 <td data-price>{row["price"]}</td>
             </tr>""")
-        htmlfile.write(html_footer)
+            htmlfile.write(html_footer)

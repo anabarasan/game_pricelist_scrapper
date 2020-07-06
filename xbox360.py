@@ -14,7 +14,7 @@ RETRIES = 5
 
 def get_page_count():
     try:
-        print('Getting Page Count.')
+        # print('Getting Page Count.')
         url = BASE_URL + str(1)
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -58,7 +58,7 @@ def generate():
     page_no = 1
     game_list = []
     while page_no <= page_count:
-        print(f"Page No: {page_no}")
+        print(f"__XBOX__ Page No: {page_no}")
         try:
             url = BASE_URL + str(page_no)
             page = requests.get(url)
@@ -68,7 +68,7 @@ def generate():
                 game_url = f"{MARKET_PLACE}{game['href']}"
                 game_title, price = get_game_details(game_url)
                 game_detail = {'title': game_title, 'price': price, 'url': game_url}
-                print(game_title, price)
+                # print(game_title, price)
                 game_list.append(game_detail)
             page_no += 1
         except Exception as e:

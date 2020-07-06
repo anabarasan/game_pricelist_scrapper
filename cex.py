@@ -29,7 +29,7 @@ def get_games(category_id, store_id):
     total_records = 999999999999999
     games = []
     while first_record < total_records:
-        print(f'starting at {first_record}')
+        # print(f'starting at {first_record}')
         url = (
             f"https://wss2.cex.in.webuy.io/v3/boxes?"
             f"categoryIds=[{category_id}]&firstRecord={first_record}"
@@ -42,7 +42,7 @@ def get_games(category_id, store_id):
         response_json = response.json()
         data = response_json['response']['data']
         total_records = data['totalRecords']
-        print(f"total_records => {data['totalRecords']}")
+        # print(f"total_records => {data['totalRecords']}")
         for box in data['boxes']:
             game_title = box['boxName']
             game_price = box['sellPrice']
@@ -64,7 +64,7 @@ def generate():
     store_names = STORES.keys()
     for store_name in store_names:
         for category_name in category_names:
-            print(f'{store_name} => {category_name}')
+            print(f'__CEX__ {store_name} => {category_name}')
             category_id = CATEGORIES[category_name]
             store_id = STORES[store_name]
             games = get_games(category_id, store_id)

@@ -26,13 +26,12 @@ def get_game_details(game_details_container):
         grid_footer = container.find("div", class_="grid-cell__footer")
         game_price = grid_footer.get_text().strip() if grid_footer else "-2"
     game_price = game_price.replace("Rs", "").replace(",", "")
-    # print(f"{game_title} \t {game_price}")
     try:
         game_price = float(game_price)
     except ValueError:
         game_price = 0.0 if game_price == "Free" else -1.0
-    print((f"{game_title} \t {game_price} \t "
-           f"{'PreOrder maybe?!' if game_price == -2.0 else ''}"))
+    # print((f"{game_title} \t {game_price} \t "
+    #        f"{'PreOrder maybe?!' if game_price == -2.0 else ''}"))
     return {"title": game_title, "price": game_price, "url": game_url}
 
 def get_page_count(page):
@@ -44,13 +43,13 @@ def get_page_count(page):
     total_no_of_items = int(matches.strip())
     item_range = page_range[page_range.find("-")+1:].strip()
     item_range = int(item_range)
-    print("Total Number of Items =>", total_no_of_items)
-    print("Page Range => ", item_range)
+    # print("Total Number of Items =>", total_no_of_items)
+    # print("Page Range => ", item_range)
     page_count = total_no_of_items / item_range
-    print("Calculated Page Count => ", page_count)
+    # print("Calculated Page Count => ", page_count)
     page_count = math.ceil(page_count)
-    print("Actual Page Count => ", page_count)
-    print("\n")
+    # print("Actual Page Count => ", page_count)
+    # print("\n")
     return page_count
 
 def generate():
@@ -58,7 +57,7 @@ def generate():
     page_num = 1
     game_list = []
     while page_num <= page_count:
-        print(f"\nPage No: {page_num}\n")
+        print(f"\n__PS4__ Page No: {page_num}\n")
         try:
             url = f"{PS_STORE}/{PS4_STORE}/{page_num}?{STORE_FILTERS}"
             page = requests.get(url)
