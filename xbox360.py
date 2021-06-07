@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import math
-from operator import itemgetter
+from operator import attrgetter
 from time import sleep
 from bs4 import BeautifulSoup
 import requests
@@ -23,9 +23,9 @@ def get_page_count():
         page_count = math.ceil(int(game_count) / 90)
         return page_count
     except Exception as e:
-        print(e)
+        print("__XBOX360__", e)
         sleep(5)
-        print("Retrying.... ")
+        print("__XBOX360__ Retrying.... ")
         get_page_count()
 
 
@@ -33,7 +33,7 @@ def get_game_details(game_url, tries=1):
     try:
         game_page = requests.get(game_url, timeout=30)
     except Exception as e:
-        print(e, game_url)
+        print("__XBOX360__", e, game_url)
         if tries == RETRIES:
             return 'unknown', -1.0
         else:
@@ -45,7 +45,7 @@ def get_game_details(game_url, tries=1):
         price = soup.find_all('span', class_='SilverPrice')[0].get_text()
         price = 0 if price == 'Free' else float(price.replace('Rs.', '').replace(',', ''))
     except IndexError:
-        print('IndexError', game_url)
+        print('__XBOX360__ IndexError', game_url)
         if tries == RETRIES:
             price = -1.0
         else:
@@ -58,7 +58,7 @@ def generate():
     page_no = 1
     game_list = []
     while page_no <= page_count:
-        print(f"__XBOX__ Page No: {page_no}")
+        print(f"__XBOX360__ Page No: {page_no}")
         try:
             url = BASE_URL + str(page_no)
             page = requests.get(url)
@@ -67,20 +67,20 @@ def generate():
             for game in games:
                 game_url = f"{MARKET_PLACE}{game['href']}"
                 game_title, price = get_game_details(game_url)
-                game_detail = {'title': game_title, 'price': price, 'url': game_url}
+                game_detail = utils.Game(game_title, "", price, game_url)
                 # print(game_title, price)
                 game_list.append(game_detail)
             page_no += 1
         except Exception as e:
-            print(e)
+            print("__XBOX360__", e)
             sleep(5)
-            print(f'failed on page no {page_no}, retrying...')
+            print(f'__XBOX360__ failed on page no {page_no}, retrying...')
 
     #sort by price
-    game_list = sorted(game_list, key=itemgetter('price'))
+    game_list = sorted(game_list, key=attrgetter('price'))
 
-    utils.generate_csv('xbox', game_list, ['title', 'price', 'url'])
-    utils.generate_html('xbox', game_list)
+    utils.generate_html('xbox360', game_list)
+    utils.generate_csv('xbox360', game_list, ['title', 'price', 'url'])
 
 if __name__ == '__main__':
     generate()

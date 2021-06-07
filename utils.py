@@ -4,6 +4,24 @@ import csv
 from datetime import datetime
 import os
 
+class Game:
+    def __init__(self, name, description, price, link,
+                 badges=None, original_price=None):
+        self.name = name
+        self.description = description
+        self.price = price
+        self.badges = badges if badges else []
+        self.original_price = original_price
+        self.new_release = "NEW RELEASE" in self.badges
+        self.link = link
+
+    def __str__(self):
+        return (
+            f"{'+' if self.new_release else ' '}"
+            f"{self.name} - {self.price}({self.original_price}) "
+            f"[{','.join(self.badges)}]"
+        )
+
 def create_output_path():
     date_parts = datetime.today().strftime('%Y-%m-%d').split('-')
     date = date_parts[2]
@@ -30,105 +48,45 @@ def generate_csv(system, row_list, field_names):
             writer = csv.DictWriter(csvfile, fieldnames=field_names, extrasaction='ignore')
             writer.writeheader()
             for row in row_list:
-                writer.writerow(row)
+                writer.writerow({'title': row.name, 'price': row.price, 'url': row.link})
 
 def generate_html(system, row_list):
     html_header = """
 <!doctype html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <style>
-            body { max-width:60rem; margin: auto; }
-            table { width: 100%; }
-        </style>
-        <script>
-        </script>
-    </head>
-    <body>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>
-                    Price 
-                    <select>
-                        <option value="-2.0">Pre Order</option>
-                        <option value="-1.0">Unavailable</option>
-                        <option value="0.0">Free</option>
-                        <option value="100-199">100-199</option>
-                        <option value="200-299">200-299</option>
-                        <option value="300-399">300-399</option>
-                        <option value="400-499">400-499</option>
-                        <option value="500-599">500-599</option>
-                        <option value="600-699">600-699</option>
-                        <option value="700-799">700-799</option>
-                        <option value="800-899">800-899</option>
-                        <option value="900-999">900-999</option>
-                        <option value="1000-1499">1000-1499</option>
-                        <option value="1500-1999">1500-1999</option>
-                        <option value="2000-2499">2000-2499</option>
-                        <option value="2500-99999">2500+</option>
-                    </select>
-                </th>
-            </tr>
+  <head>
+    <title>GAME CATALOGUE</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script>
+      $(document).ready( function () {
+        $('#myTable').DataTable( {
+          "paging": true,
+          "ordering": true,
+          "info": true,
+          "searching": true,
+          "responsive": true
+        } );
+      } );
+    </script>
+  </head>
+  <body>
+    <table id="myTable">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
 """
 
     html_footer = """
-        </table>
-    </body>
-    <script>
-        function get_min_max() {
-            elems = document.querySelectorAll('option')
-            for (var i=0; i<elems.length; i++) {
-                e=elems[i];
-                if (e.selected) {
-                    // console.log(e);
-                    range = e.value;
-                    if (["0.0", "-1.0", "-2.0"].includes(range)) {
-                        if (range === "0.0") {
-                            min = -0.1;
-                            max = 0.0;
-                        } else if (range === "-1.0") {
-                            min = -1.1;
-                            max = -1.0;
-                        } else if (range === "-2.0") {
-                            min = -2.1;
-                            max = -2.0;
-                        }
-                    } else {
-                        values = range.split("-")
-                        min = parseFloat(values[0]);
-                        max = parseFloat(values[1]);
-                    }
-                    return [min, max]
-                }
-            }
-        }
-
-        function filter(event) {
-            // console.log(event.target);
-            range = get_min_max();
-            min = range[0];
-            max = range[1];
-            price_elems = document.querySelectorAll('td[data-price]');
-            printed=false;
-            price_elems.forEach(function(element) {
-                game_price = parseFloat(element.innerHTML);
-                // console.log(game_price > min, game_price < max);
-                if (game_price >= min && game_price < max+1) {
-                    // console.log(element.innerHTML);
-                    element.parentElement.style.display = "";
-                } else {
-                    element.parentElement.style.display = "none";
-                }
-            });
-        }
-        var price_selector = document.querySelectorAll('select')
-        for (var i=0; i < price_selector.length; i++) {
-            e = price_selector[i];
-            e.addEventListener("change", filter);
-        }
-    </script>
+      </tbody>
+    </table>
+  </body>
 </html>
 """
     output_path = create_output_path()
@@ -138,11 +96,10 @@ def generate_html(system, row_list):
             htmlfile.write(html_header)
             for row in row_list:
                 htmlfile.write(
-                   f"""
-            <tr>
-                <td>
-                    <a href="{row["url"]}" target="_blank">{row["title"]}</a>
-                </td>
-                <td data-price>{row["price"]}</td>
-            </tr>""")
+                    "        <tr>\n"
+                    f'          <td><a href="{row.link}" target="_blank">{row.name}</a></td>\n'
+                    f"          <td>{row.description}</td>\n"
+                    f"         <td>{row.price}</td>\n"
+                    "        </tr>\n"
+                )
             htmlfile.write(html_footer)

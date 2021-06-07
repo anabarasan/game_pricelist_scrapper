@@ -13,6 +13,7 @@ CATEGORIES = {
     "ps4": 1021,
     "switch": 1038,
     "xboxone": 1023,
+    "xbox_series": 1067,
 }
 
 STORES = {
@@ -41,22 +42,26 @@ def get_games(category_id, store_id):
         response.raise_for_status()
         response_json = response.json()
         data = response_json['response']['data']
-        total_records = data['totalRecords']
-        # print(f"total_records => {data['totalRecords']}")
-        for box in data['boxes']:
-            game_title = box['boxName']
-            game_price = box['sellPrice']
-            game_url = f"https://in.webuy.com/product-detail?id={box['boxId'].lower()}"
-            # lets filter out ntsc games,
-            # since that wont work with our console
-            if 'ntsc' not in game_title.lower():
-                games.append({
-                    'url': game_url,
-                    'title': game_title,
-                    'price': game_price
-                })
-        first_record = first_record + count
-        sleep(1)
+        if data:
+            total_records = data['totalRecords']
+            # print(f"total_records => {data['totalRecords']}")
+            for box in data['boxes']:
+                game_title = box['boxName']
+                game_price = box['sellPrice']
+                game_url = f"https://in.webuy.com/product-detail?id={box['boxId'].lower()}"
+                # lets filter out ntsc games,
+                # since that wont work with our console
+                if 'ntsc' not in game_title.lower():
+                    # games.append({
+                    #     'url': game_url,
+                    #     'title': game_title,
+                    #     'price': game_price
+                    # })
+                    games.append(utils.Game(game_title, "", game_price, game_url))
+            first_record = first_record + count
+            sleep(1)
+        else:
+            total_records = 0
     return games
 
 def generate():
