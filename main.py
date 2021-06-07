@@ -12,7 +12,7 @@ def process(func):
 
 def main():
     generator = [xbox.generate, xbox360.generate, ps4.generate, cex.generate]
-    pool = Pool(processes=2)
+    pool = Pool(processes=3)
     pool.map(process, generator)
 
 if __name__ == '__main__':

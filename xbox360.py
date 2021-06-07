@@ -10,6 +10,7 @@ import utils
 
 MARKET_PLACE = 'https://marketplace.xbox.com'
 BASE_URL = f'{MARKET_PLACE}/en-IN/Games/Xbox360Games?pagesize=90&SortBy=Title&Page='
+BASE_URL = f'{MARKET_PLACE}/en-IN/Games/All?pagesize=90&SortBy=Title&Page='
 RETRIES = 5
 
 def get_page_count():
