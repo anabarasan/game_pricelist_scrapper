@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 from operator import attrgetter, itemgetter
 import os
 from time import sleep
@@ -22,10 +23,12 @@ XPATH_NEXT_PAGE_LINK = '/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/nav
 XPATH_GAMES_PER_PAGE_MENU = '/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[6]/section/div/div/button'
 XPATH_GAMES_PER_PAGE_200 = '/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[6]/section/div/div/ul/li[4]'
 
-def get_driver(incognito=True):
+def get_driver(headless=True, incognito=True):
     chrome_options = webdriver.ChromeOptions()
     if incognito:
         chrome_options.add_argument("--incognito")
+    if headless:
+        chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(chrome_options=chrome_options)
     return driver
 
@@ -40,7 +43,7 @@ def set_max_games_per_page(driver):
     driver.find_element_by_xpath(XPATH_GAMES_PER_PAGE_MENU).click()
     driver.find_element_by_xpath(XPATH_GAMES_PER_PAGE_200).click()
     sleep(AJAX_WAIT_TIME)
-    
+
 def process_game_item(page):
     try:
         soup = BeautifulSoup(page, 'html.parser')
@@ -80,8 +83,15 @@ def next_page(driver):
     except NoSuchElementException:
         return False
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--debug", action="store_false", default=True)
+    args = parser.parse_args()
+    return args
+
 def generate():
-    with get_driver() as driver:
+    args = parse_args()
+    with get_driver(headless=args.debug) as driver:
         driver.get(CATALOGUE_URL)
         total_games = get_total_available_games(driver)
         set_max_games_per_page(driver)
