@@ -93,6 +93,7 @@ def generate():
 
     utils.generate_csv("ps4", game_list, ["title", "price", "url"])
     utils.generate_html("ps4", game_list)
+    utils.publish()
 
 if __name__ == '__main__':
     generate()

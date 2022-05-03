@@ -3,6 +3,7 @@
 import csv
 from datetime import datetime
 import os
+import shutil
 
 class Game:
     def __init__(self, name, description, price, link,
@@ -27,7 +28,7 @@ def create_output_path():
     date = date_parts[2]
     month = date_parts[1]
     year = date_parts[0]
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), year, month, date)
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results', year, month, date)
 
     if os.path.exists(path):
         if os.path.isdir(path):
@@ -103,3 +104,10 @@ def generate_html(system, row_list):
                     "        </tr>\n"
                 )
             htmlfile.write(html_footer)
+
+def publish():
+    source = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
+    destination = os.path.join(os.path.expanduser("~"), "Public", "GamePriceList")
+    shutil.rmtree(destination)
+    shutil.copytree(source, destination)
+

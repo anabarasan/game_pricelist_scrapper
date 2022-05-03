@@ -11,17 +11,22 @@ from selenium.common.exceptions import NoSuchElementException
 
 import utils
 
-INITIAL_WAIT_TIME = 15
+INITIAL_WAIT_TIME = 30
 AJAX_WAIT_TIME = 5
 GAME_LIST = []
 
-CATALOGUE_URL = "https://www.xbox.com/en-in/games/all-games"
-XPATH_TOTAL_GAMES = "/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[2]/div[1]/p"
-XPATH_CATALOGUE = '//*[@id="ContentBlockList_1"]/div[1]/div[2]/div[4]'
+# The Main Page URL
+CATALOGUE_URL = 'https://www.xbox.com/en-in/games/all-games'
+# the text which shows `Viewing 1-x of yyyy results`.
+XPATH_TOTAL_GAMES = '//*[@id="ContentBlockList_1"]/div[1]/div[2]/div[2]/div[1]/p'
+# the container containing the list of games shown on screen
+XPATH_CATALOGUE = '//*[@id="ContentBlockList_1"]/div[1]/div[2]/div[5]'
 XPATH_NEXT_PAGE = '/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/nav/ul/li[13]'
 XPATH_NEXT_PAGE_LINK = '/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/nav/ul/li[13]/a'
-XPATH_GAMES_PER_PAGE_MENU = '/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[6]/section/div/div/button'
-XPATH_GAMES_PER_PAGE_200 = '/html/body/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[6]/section/div/div/ul/li[4]'
+# The menu where we can select the number of items to be displayed on the page
+XPATH_GAMES_PER_PAGE_MENU = '//*[@id="unique-id-for-paglist-generated-select-menu-trigger"]'
+# The number of games which we want to be displayed on the page.  (200)
+XPATH_GAMES_PER_PAGE_200 = '//*[@id="unique-id-for-paglist-generated-select-menu-3"]'
 
 def get_driver(headless=True, incognito=True):
     chrome_options = webdriver.ChromeOptions()
@@ -74,6 +79,7 @@ def read_catalogue_page(driver):
     for product in products:
         product_item_html = etree.tostring(product, pretty_print=True)
         process_game_item(product_item_html)
+    sleep(AJAX_WAIT_TIME)
 
 def next_page(driver):
     try:
@@ -108,6 +114,7 @@ def generate():
     GAME_LIST.sort(key=attrgetter('name'))
     utils.generate_html('xbox', GAME_LIST)
     utils.generate_csv('xbox', GAME_LIST, ['title', 'price', 'url'])
+    utils.publish()
 
 if __name__ == "__main__":
     generate()

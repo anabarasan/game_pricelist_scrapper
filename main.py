@@ -11,7 +11,7 @@ def process(func):
     func()
 
 def main():
-    generator = [xbox.generate, xbox360.generate, ps4.generate, cex.generate]
+    generator = [xbox360.generate, xbox.generate, ps4.generate, cex.generate]
     pool = Pool(processes=3)
     pool.map(process, generator)
 

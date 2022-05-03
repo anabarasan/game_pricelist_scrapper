@@ -21,7 +21,7 @@ def get_page_count():
         soup = BeautifulSoup(page.content, 'html.parser')
         coverage = soup.find_all('div', class_='Coverage')
         game_count = coverage[0].get_text().split(' of ')[1]
-        page_count = math.ceil(int(game_count) / 90)
+        page_count = math.ceil(int(game_count.replace(",", "")) / 90)
         return page_count
     except Exception as e:
         print("__XBOX360__", e)
@@ -82,6 +82,7 @@ def generate():
 
     utils.generate_html('xbox360', game_list)
     utils.generate_csv('xbox360', game_list, ['title', 'price', 'url'])
+    utils.publish()
 
 if __name__ == '__main__':
     generate()

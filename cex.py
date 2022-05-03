@@ -76,6 +76,7 @@ def generate():
             if games:
                 utils.generate_csv(f'cex-{store_name}-{category_name}', games, ['title', 'price', 'url'])
                 utils.generate_html(f'cex-{store_name}-{category_name}', games)
+                utils.publish()
 
 if __name__ == '__main__':
     generate()
